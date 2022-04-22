@@ -6,14 +6,22 @@ import pyttsx3
 import speech_recognition as sr #from pip install SpeechRecognition
 from gtts import gTTS
 import spacy
+from nltk.sentiment import SentimentIntensityAnalyzer
+import nltk
+nltk.download('vader_lexicon') #downloads Valence Aware Dictionary and sEntiment Reasoner
 #import textacy
 
 utterance = ""
 quit_words = ['stop', 'bye']
+sia = SentimentIntensityAnalyzer()
+short_term = []
+spacy_location = r"C:\ProgramData\Anaconda3\Lib\site-packages\en_core_web_md-3.2.0\en_core_web_md\en_core_web_md-3.2.0"
 engine = pyttsx3.init()
 voices = engine.getProperty('voices') 
 engine.setProperty('voice', voices[1].id)
-nlp = spacy.load(r"C:\ProgramData\Anaconda3\Lib\site-packages\en_core_web_md-3.2.0\en_core_web_md\en_core_web_md-3.2.0")
+nlp = spacy.load(spacy_location)
+
+print("\nHi there, I'm ready to chat!")
 
 
 # def speak(text):
@@ -53,21 +61,6 @@ def listen():
     return said
 
 
-#determines if a sentence is a question or statement by looking at keywords
-# def sent_type(sentence):
-#     words = sentence.text.split(' ')
-#     question = 'statement'
-#     for token in sentence:
-#         #print(token.pos_, end=' ')
-#         if token.tag_[0] == "W":
-#             index = words.index(token.text)
-#             print('question!!!')
-#             question = 'question'
-#             print('bigram: {}'.format(sentence[index].text + ' ' + sentence[index + 1].text))
-#         print(token.text, token.lemma_, token.pos_, token.tag_, token.dep_, token.shape_, token.is_alpha, token.is_stop)
-#     print(' ')
-#     return question 
-
 def question_check(sentence):
     words = list(enumerate(sentence.text.split(' ')))
     question = False
@@ -104,6 +97,24 @@ def find_sub(sentence):
             break
     if subject == '':
         print('no subject found...')
+        
+def find_obj(sentence):
+    obj = ''
+    for token in list(sentence)[::-1]:
+        if token.dep_ == "iobj": #finds indirect object
+            obj = token.orth_
+            print('object: ' + obj)
+            return        
+        # elif token.dep_ == "nsubj": #finds subject
+        #     subject = token.orth_
+        #     print('object: ' + subject)
+        #     return
+        elif token.dep_ == "dobj": #finds direct object
+            obj = token.orth_
+            print('object: ' + obj)
+            return
+    if obj == '':
+        print('no object found...')
 
     
 #looks for forms of the word 'be' to link nouns with data
@@ -122,23 +133,24 @@ def named(sentence):
     
     
 #does sentiment analysis to determine what the user feels about a topic, which might help conversation   
-def sentiment():
-    return         
+def sentiment(sentence):
+    feeling = sia.polarity_scores(sentence)
+    return feeling      
        
     
 #main
 while utterance not in quit_words:
     try:
         utterance = listen()
+        if utterance in quit_words:
+            raise Exception("\nTalk to you later!")
         sentence = nlp(utterance)
         question = question_check(sentence)
         print('question: ' + str(question))
-        #if sent_type(sentence) == 'statement':
-        #    find_sub(sentence)
+        print(sentiment(str(sentence)))
+        if question is False:
+            find_obj(sentence)
         #be_check(sentence)
         #speak(utterance) #repeats what you say - for testing
     except Exception as e:
-        print("I can't hear you")
         print(e)
-    if utterance in quit_words:
-        print("Talk to you later!")
