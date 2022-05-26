@@ -14,7 +14,7 @@ nltk.download('vader_lexicon') #downloads Valence Aware Dictionary and sEntiment
 utterance = ""
 quit_words = ['stop', 'bye']
 sia = SentimentIntensityAnalyzer()
-short_term = []
+short_term, conversation = [], []
 spacy_location = r"C:\ProgramData\Anaconda3\Lib\site-packages\en_core_web_md-3.2.0\en_core_web_md\en_core_web_md-3.2.0"
 engine = pyttsx3.init()
 voices = engine.getProperty('voices') 
@@ -86,17 +86,18 @@ def find_sub(sentence):
         if token.dep_ == "nsubj": #finds subject
             subject = token.orth_
             print('subject: ' + subject)
-            break
+            return tuple([subject, token.pos_])
         elif token.dep_ == "dobj": #finds direct object
             direct_object = token.orth_
             print('subject: ' + direct_object)
-            break
+            return tuple([direct_object, token.pos_])
         elif token.dep_ == "iobj": #finds indirect object
             indirect_object = token.orth_
             print('subject: ' + indirect_object)
-            break
+            return tuple([indirect_object, token.pos_])
     if subject == '':
         print('no subject found...')
+        return "", ""
         
 def find_obj(sentence):
     obj = ''
@@ -105,14 +106,14 @@ def find_obj(sentence):
             obj = token.orth_
             print('object: ' + obj)
             return        
-        # elif token.dep_ == "nsubj": #finds subject
-        #     subject = token.orth_
-        #     print('object: ' + subject)
-        #     return
         elif token.dep_ == "dobj": #finds direct object
             obj = token.orth_
             print('object: ' + obj)
             return
+        elif token.dep_ == "nsubj": #finds subject
+            obj = token.orth_
+            print('object: ' + obj)
+            return        
     if obj == '':
         print('no object found...')
 
@@ -121,6 +122,7 @@ def find_obj(sentence):
 def be_check(sentence):
     for token in sentence:
         print(token.pos_)
+        
         if token.pos_ == "AUX" and token.lemma_ in ["is", "be", "are"]:
             print("I found a be in this sentence at {}".format(token))
             #print(token.text, token.lemma_, token.pos_, token.tag_, token.dep_, token.shape_, token.is_alpha, token.is_stop)
@@ -137,6 +139,20 @@ def sentiment(sentence):
     feeling = sia.polarity_scores(sentence)
     return feeling      
        
+def clean_short_term(my_memory):
+    remove_list = ["", "I", "you", "me"]
+    for word in my_memory:
+        if word in remove_list:
+            my_memory.remove(word)
+    return my_memory
+
+def return_query(info_type, info):
+    
+    return
+
+def more_info():
+    
+    return
     
 #main
 while utterance not in quit_words:
@@ -144,13 +160,26 @@ while utterance not in quit_words:
         utterance = listen()
         if utterance in quit_words:
             raise Exception("\nTalk to you later!")
-        sentence = nlp(utterance)
-        question = question_check(sentence)
+        sentence = nlp(utterance) 
+        question = question_check(sentence) #type is boolean
         print('question: ' + str(question))
         print(sentiment(str(sentence)))
         if question is False:
+            subject, subject_type = find_sub(sentence)
+            short_term.append(find_sub(sentence))
+            print("subject: {} & type: {}".format(short_term[0][0], short_term[0][1]))            
+            print(short_term)
             find_obj(sentence)
+        else:
+            find_sub(sentence)[0]
         #be_check(sentence)
         #speak(utterance) #repeats what you say - for testing
     except Exception as e:
         print(e)
+    short_term = clean_short_term(short_term)
+    print("short term: {}".format(short_term))
+    
+    #currently working on adding POS checking between this and the find_sub method
+    if len(short_term) == 1 and short_term[0][1] == "PRON":
+        print("Who do you mean by \'{}\'?".format(short_term[0][0]))
+    
