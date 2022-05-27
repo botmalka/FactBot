@@ -12,8 +12,8 @@ NLTK spaCy, speech_recognition, pyttsx3, (previously included gtts and may again
 - added a short term memory for subjects of previous sentence to help with pronoun recognition
 
 ## Future goals:
-- finish functionality to recognize pronouns 
+- finish functionality to recognize pronouns as previous subjects
 - add a conversation history tracker (have variables set up, but need methods made)
-- improve and vary responses
+- improve and vary responses made by chatbot
 - add a database to store long-term information about certain subjects
 - use named-entity recognition and addition APIs to learn about common topics from the internet 
