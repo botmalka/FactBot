@@ -143,7 +143,8 @@ def clean_short_term(my_memory):
     remove_list = ["", "I", "you", "me"]
     for word in my_memory:
         if word in remove_list:
-            my_memory.remove(word)
+            my_memory.remove(word) #CURRENTLY NOT WORKING FOR NULL IN LIST
+    print("my_memory from clean_short_term: {}".format(my_memory))
     return my_memory
 
 def return_query(info_type, info):
@@ -152,6 +153,15 @@ def return_query(info_type, info):
 
 def more_info():
     
+    return
+
+def clarify_pronoun(pronoun, conversation):
+    if pronoun in ["it", "It"]:
+        question_type = "What"
+    else:
+        question_type = "Who"
+    print("{} do you mean by \'{}\'?".format(question_type, pronoun))
+    print(conversation)
     return
     
 #main
@@ -165,8 +175,8 @@ while utterance not in quit_words:
         print('question: ' + str(question))
         print(sentiment(str(sentence)))
         if question is False:
-            subject, subject_type = find_sub(sentence)
-            short_term.append(find_sub(sentence))
+            subject, subject_type = find_sub(sentence) 
+            short_term.append(tuple([subject, subject_type])) #CURRENT LINE BEING MODIFIED
             print("subject: {} & type: {}".format(short_term[0][0], short_term[0][1]))            
             print(short_term)
             find_obj(sentence)
@@ -180,6 +190,11 @@ while utterance not in quit_words:
     print("short term: {}".format(short_term))
     
     #currently working on adding POS checking between this and the find_sub method
-    if len(short_term) == 1 and short_term[0][1] == "PRON":
-        print("Who do you mean by \'{}\'?".format(short_term[0][0]))
+    if len(short_term) >= 1:
+        print(len(short_term))
+        print(short_term[-1][1])
+        if short_term[-1][1] == "PRON":
+            print("clarifying pronoun: {}".format(short_term[-1][0]))
+            clarify_pronoun(short_term[-1][0], conversation)
+            #print("Who do you mean by \'{}\'?".format(short_term[0][0]))
     
