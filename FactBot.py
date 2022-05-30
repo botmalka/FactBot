@@ -198,3 +198,4 @@ while utterance not in quit_words:
             clarify_pronoun(short_term[-1][0], conversation)
             #print("Who do you mean by \'{}\'?".format(short_term[0][0]))
     
+    
