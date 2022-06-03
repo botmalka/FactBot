@@ -10,6 +10,7 @@ NLTK spaCy, speech_recognition, pyttsx3, (previously included gtts and may again
 
 ## Recent additions:
 - added a short term memory for subjects of previous sentence to help with pronoun recognition
+- gave the bot the ability to pull a sentence from an news article related to a topic, that contains the topic
 
 ## Future goals:
 - finish functionality to recognize pronouns as previous subjects
