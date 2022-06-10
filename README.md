@@ -8,6 +8,8 @@ It uses spaCy and NLTK to decifer the confusing way people communicate using sen
 ## Libraries: 
 NLTK spaCy, speech_recognition, pyttsx3, (previously included gtts and may again)
 
+requires Wolfram Engine (https://www.wolfram.com/engine/)
+
 ## Recent additions:
 - added a short term memory for subjects of previous sentence to help with pronoun recognition
 - gave the bot the ability to pull a sentence from an news article related to a topic, that contains the topic
